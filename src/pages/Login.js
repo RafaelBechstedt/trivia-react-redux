@@ -1,12 +1,12 @@
 import { func, shape } from 'prop-types';
 import React, { Component } from 'react';
-// import { connect } from 'react-redux';
+import { connect } from 'react-redux';
+import { addUser } from '../redux/actions';
 
 class Login extends Component {
   state = {
     email: '',
     name: '',
-    // image: '',
   };
 
   handleInput = ({ target }) => {
@@ -32,7 +32,12 @@ class Login extends Component {
   handleBtn = async (event) => {
     event.preventDefault();
     const token = await this.fetchApi();
-    const { history } = this.props;
+    const { history, setUser } = this.props;
+    const { name, email } = this.state;
+    setUser({
+      name,
+      email,
+    });
     localStorage.setItem('token', token);
     history.push('/game');
   };
@@ -95,13 +100,14 @@ class Login extends Component {
 }
 
 Login.propTypes = {
+  setUser: func,
   history: shape({
     push: func,
-  }).isRequired,
-};
+  }),
+}.isRequired;
 
-// const mapDispatchToProps = (dispatch) => ({
-//   addToken: async () => await dispatch(fetchApi()),
-// });
+const mapDispatchToProps = (dispatch) => ({
+  setUser: (user) => dispatch(addUser(user)),
+});
 
-export default Login;
+export default connect(null, mapDispatchToProps)(Login);
