@@ -1,6 +1,6 @@
-// import { object } from 'prop-types';
+import { func, shape } from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 
 class Login extends Component {
   state = {
@@ -18,12 +18,27 @@ class Login extends Component {
 
   validateBtn = () => {
     const { email, name } = this.state;
-    return (email.length === 0 || name.length === 0);
+    return email.length === 0 || name.length === 0;
+  };
+
+  fetchApi = async () => {
+    const response = await fetch(
+      'https://opentdb.com/api_token.php?command=request',
+    );
+    const data = await response.json();
+    return data.token;
+  };
+
+  handleBtn = async (event) => {
+    event.preventDefault();
+    const token = await this.fetchApi();
+    const { history } = this.props;
+    localStorage.setItem('token', token);
+    history.push('/game');
   };
 
   render() {
     const { email, name } = this.state;
-    console.log(this.validateBtn());
     return (
       <form
         style={ {
@@ -59,7 +74,7 @@ class Login extends Component {
             type="submit"
             className="btn btn-primary btn-block"
             data-testid="btn-play"
-            // onClick={this.handleBtn}
+            onClick={ this.handleBtn }
             disabled={ this.validateBtn() }
           >
             Play
@@ -70,4 +85,14 @@ class Login extends Component {
   }
 }
 
-export default connect()(Login);
+Login.propTypes = {
+  history: shape({
+    push: func,
+  }).isRequired,
+};
+
+// const mapDispatchToProps = (dispatch) => ({
+//   addToken: async () => await dispatch(fetchApi()),
+// });
+
+export default Login;
