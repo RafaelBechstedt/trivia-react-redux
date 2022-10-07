@@ -1,7 +1,6 @@
-import { func } from 'prop-types';
+import { func, shape } from 'prop-types';
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { fetchApi } from '../redux/actions';
+// import { connect } from 'react-redux';
 
 class Login extends Component {
   state = {
@@ -19,56 +18,64 @@ class Login extends Component {
 
   validateBtn = () => {
     const { email, name } = this.state;
-    return (email.length === 0 || name.length === 0);
+    return email.length === 0 || name.length === 0;
   };
 
-  handleBtn = async () => {
-    console.log('oi')
-    const { addToken, history } = this.props
-    await addToken()
-    // localStorage.setItem({'token', })
-    // history.push()
-  }
+  fetchApi = async () => {
+    const response = await fetch(
+      'https://opentdb.com/api_token.php?command=request',
+    );
+    const data = await response.json();
+    return data.token;
+  };
+
+  handleBtn = async (event) => {
+    event.preventDefault();
+    const token = await this.fetchApi();
+    const { history } = this.props;
+    localStorage.setItem('token', token);
+    history.push('/game');
+  };
 
   render() {
     const { email, name } = this.state;
     return (
       <form
-        style={{
+        style={ {
           width: 350,
           margin: '40px auto',
-        }}
+        } }
       >
         <h2 className="text-center">SC-Login</h2>
         <div className="form-group">
           <input
-            value={email}
+            value={ email }
             placeholder="Email"
             name="email"
             className="form-control"
             type="email"
             data-testid="input-gravatar-email"
-            onChange={this.handleInput}
+            onChange={ this.handleInput }
           />
         </div>
         <div className="form-group">
           <input
-            value={name}
+            value={ name }
             placeholder="Nome"
             className="form-control"
             type="text"
             data-testid="input-player-name"
-            onChange={this.handleInput}
+            onChange={ this.handleInput }
             name="name"
           />
         </div>
         <div className="form-group">
           <button
-            type="sumit"
+            type="submit"
             className="btn btn-primary btn-block"
             data-testid="btn-play"
-            onClick={this.handleBtn}
-            disabled={this.validateBtn()}
+            onClick={ this.handleBtn }
+            disabled={ this.validateBtn() }
           >
             Play
           </button>
@@ -79,11 +86,13 @@ class Login extends Component {
 }
 
 Login.propTypes = {
-  addToken: func.isRequired
-}
+  history: shape({
+    push: func,
+  }).isRequired,
+};
 
-const mapDispatchToProps = (dispatch) => ({
-  addToken: () => dispatch(fetchApi()),
-})
+// const mapDispatchToProps = (dispatch) => ({
+//   addToken: async () => await dispatch(fetchApi()),
+// });
 
-export default connect(null, mapDispatchToProps)(Login);
+export default Login;
