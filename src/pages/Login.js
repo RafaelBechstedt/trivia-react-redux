@@ -39,6 +39,7 @@ class Login extends Component {
 
   render() {
     const { email, name } = this.state;
+    const { history } = this.props;
     return (
       <form
         style={ {
@@ -78,6 +79,14 @@ class Login extends Component {
             disabled={ this.validateBtn() }
           >
             Play
+          </button>
+          <button
+            type="button"
+            className="btn btn-primary btn-block"
+            data-testid="btn-settings"
+            onClick={ () => { history.push('/settings'); } }
+          >
+            Settings
           </button>
         </div>
       </form>
