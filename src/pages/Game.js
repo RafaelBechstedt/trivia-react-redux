@@ -9,10 +9,13 @@ class Game extends React.Component {
     count: 0,
     loading: true,
     answered: false,
+    timer: 30,
   };
 
   componentDidMount() {
+    const SECOND = 1000;
     this.fetchApi();
+    setInterval(() => this.decreaseTimer(), SECOND);
   }
 
   fetchApi = async () => {
@@ -75,10 +78,23 @@ class Game extends React.Component {
     this.setState({
       answered: true,
     });
+    clearInterval(0);
+  };
+
+  decreaseTimer = () => {
+    this.setState((prev) => ({
+      timer: prev.timer - 1,
+
+    }), () => {
+      const { timer } = this.state;
+      if (timer === 0) {
+        this.handleClick();
+      }
+    });
   };
 
   render() {
-    const { questions, count, loading, answered } = this.state;
+    const { questions, count, loading, answered, timer } = this.state;
     const { history } = this.props;
     const expiredToken = 3;
     let pageGame = '';
@@ -91,6 +107,7 @@ class Game extends React.Component {
       this.randomAnswers();
       pageGame = (
         <div>
+          <span>{timer}</span>
           <p data-testid="question-category">{ questions.results[count].category }</p>
           <p data-testid="question-text">{ questions.results[count].question }</p>
           <div data-testid="answer-options">
@@ -102,6 +119,7 @@ class Game extends React.Component {
                   id={ answered ? 'correct' : null }
                   key={ answer.answer }
                   onClick={ this.handleClick }
+                  disabled={ answered }
                 >
                   {answer.answer}
                 </button>
@@ -112,6 +130,7 @@ class Game extends React.Component {
                   id={ answered ? 'incorrect' : null }
                   key={ answer }
                   onClick={ this.handleClick }
+                  disabled={ answered }
                 >
                   {answer}
                 </button>
