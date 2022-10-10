@@ -1,12 +1,128 @@
 import React from 'react';
+import { shape, func } from 'prop-types';
+
 import Header from '../components/Header';
 
 class Game extends React.Component {
+  state = {
+    questions: {},
+    count: 0,
+    loading: true,
+  };
+
+  componentDidMount() {
+    this.fetchApi();
+  }
+
+  fetchApi = async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(
+      `https://opentdb.com/api.php?amount=5&token=${token}`,
+    );
+    const data = await response.json();
+
+    this.setState({
+      questions: data,
+      loading: false,
+    });
+  };
+
+  // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+  shuffle = (array) => {
+    let currentIndex = array.length; let
+      randomIndex;
+
+    // Enquanto restam elementos para embaralhar.
+    while (currentIndex !== 0) {
+      // Escolha um elemento restante.
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+
+      // E troque-o com o elemento atual.
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+
+    return array;
+  };
+
+  randomAnswers = () => {
+    const { questions, count } = this.state;
+    const arr = [];
+    const question = questions.results[count];
+    arr.push(
+      ...questions.results[count].incorrect_answers,
+    );
+    arr.push(
+      { answer: question.correct_answer, correct: true },
+    );
+    const shuffledArray = this.shuffle(arr);
+
+    return shuffledArray;
+
+    // this.setState({
+    //   answers: shuffledArray,
+    // });
+  };
+
+  incrementIndex = (index) => {
+    index += 1;
+    return index;
+  };
+
   render() {
+    const { questions, count, loading } = this.state;
+    const { history } = this.props;
+    const expiredToken = 3;
+    let pageGame = '';
+    const index = -1;
+    if (questions.response_code === expiredToken) {
+      localStorage.removeItem('token');
+      history.push('/');
+    }
+    if (!loading && questions.response_code !== expiredToken) {
+      this.randomAnswers();
+      pageGame = (
+        <div>
+          <p data-testid="question-category">{ questions.results[count].category }</p>
+          <p data-testid="question-text">{ questions.results[count].question }</p>
+          <div data-testid="answer-options">
+            { this.randomAnswers().map((answer) => (
+              answer.correct ? (
+                <button
+                  type="button"
+                  data-testid="correct-answer"
+                  id="correct"
+                  key={ answer.answer }
+                >
+                  {answer.answer}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  data-testid={ `wrong-answer-${this.incrementIndex(index)}` }
+                  id="incorrect"
+                  key={ answer }
+                >
+                  {answer}
+                </button>
+              )
+            ))}
+          </div>
+        </div>
+      );
+    }
     return (
-      <Header />
+      <div>
+        <Header />
+        { pageGame }
+      </div>
     );
   }
 }
+
+Game.propTypes = {
+  history: shape({ push: func }),
+}.isRequired;
 
 export default Game;
