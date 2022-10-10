@@ -1,5 +1,6 @@
 import React from 'react';
-import { Redirect } from 'react-router-dom';
+import { shape, func } from 'prop-types';
+
 import Header from '../components/Header';
 
 class Game extends React.Component {
@@ -7,12 +8,10 @@ class Game extends React.Component {
     questions: {},
     count: 0,
     loading: true,
-    answers: [],
   };
 
   componentDidMount() {
     this.fetchApi();
-    localStorage.removeItem('token');
   }
 
   fetchApi = async () => {
@@ -59,39 +58,53 @@ class Game extends React.Component {
     );
     const shuffledArray = this.shuffle(arr);
 
-    this.setState({
-      answers: shuffledArray,
-    });
+    return shuffledArray;
+
+    // this.setState({
+    //   answers: shuffledArray,
+    // });
+  };
+
+  incrementIndex = (index) => {
+    index += 1;
+    return index;
   };
 
   render() {
-    const { questions, count, loading, answers } = this.state;
+    const { questions, count, loading } = this.state;
+    const { history } = this.props;
     const expiredToken = 3;
     let pageGame = '';
-    let index = 0;
-    if (!loading) {
+    const index = -1;
+    if (questions.response_code === expiredToken) {
+      localStorage.removeItem('token');
+      history.push('/');
+    }
+    if (!loading && questions.response_code !== expiredToken) {
       this.randomAnswers();
       pageGame = (
         <div>
           <p data-testid="question-category">{ questions.results[count].category }</p>
           <p data-testid="question-text">{ questions.results[count].question }</p>
           <div data-testid="answer-options">
-            { answers.map((answer) => (
+            { this.randomAnswers().map((answer) => (
               answer.correct ? (
                 <button
                   type="button"
                   data-testid="correct-answer"
                   id="correct"
+                  key={ answer.answer }
                 >
                   {answer.answer}
                 </button>
               ) : (
                 <button
                   type="button"
-                  data-testid={ `wrong-answer-${index}` }
+                  data-testid={ `wrong-answer-${this.incrementIndex(index)}` }
                   id="incorrect"
+                  key={ answer }
                 >
-                  {answer.answer}
+                  {answer}
                 </button>
               )
             ))}
@@ -102,11 +115,14 @@ class Game extends React.Component {
     return (
       <div>
         <Header />
-        { (questions.response_code === expiredToken) && <Redirect to="/" /> }
         { pageGame }
       </div>
     );
   }
 }
+
+Game.propTypes = {
+  history: shape({ push: func }),
+}.isRequired;
 
 export default Game;
