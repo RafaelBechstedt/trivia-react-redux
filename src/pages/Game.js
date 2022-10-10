@@ -8,6 +8,7 @@ class Game extends React.Component {
     questions: {},
     count: 0,
     loading: true,
+    answered: false,
   };
 
   componentDidMount() {
@@ -70,8 +71,14 @@ class Game extends React.Component {
     return index;
   };
 
+  handleClick = () => {
+    this.setState({
+      answered: true,
+    });
+  };
+
   render() {
-    const { questions, count, loading } = this.state;
+    const { questions, count, loading, answered } = this.state;
     const { history } = this.props;
     const expiredToken = 3;
     let pageGame = '';
@@ -92,8 +99,9 @@ class Game extends React.Component {
                 <button
                   type="button"
                   data-testid="correct-answer"
-                  id="correct"
+                  id={ answered ? 'correct' : null }
                   key={ answer.answer }
+                  onClick={ this.handleClick }
                 >
                   {answer.answer}
                 </button>
@@ -101,8 +109,9 @@ class Game extends React.Component {
                 <button
                   type="button"
                   data-testid={ `wrong-answer-${this.incrementIndex(index)}` }
-                  id="incorrect"
+                  id={ answered ? 'incorrect' : null }
                   key={ answer }
+                  onClick={ this.handleClick }
                 >
                   {answer}
                 </button>
