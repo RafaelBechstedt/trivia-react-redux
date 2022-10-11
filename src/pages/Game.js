@@ -1,5 +1,5 @@
 import React from 'react';
-import { shape, func, number } from 'prop-types';
+import { shape, func, number, string } from 'prop-types';
 import { connect } from 'react-redux';
 import Header from '../components/Header';
 import { setRanking } from '../redux/actions';
@@ -129,9 +129,19 @@ class Game extends React.Component {
 
   incrementCount = () => {
     const { count } = this.state;
-    const { history } = this.props;
+    const { history, name, score } = this.props;
     const lastQuestion = 4;
+    const arr = [];
     if (count >= lastQuestion) {
+      const ranking = JSON.parse(localStorage.getItem('ranking'));
+      const result = { name, score };
+      if (!ranking) {
+        arr.push(result);
+        localStorage.setItem('ranking', JSON.stringify(arr));
+      } else {
+        ranking.push(result);
+        localStorage.setItem('ranking', JSON.stringify(ranking));
+      }
       history.push('/Feedback');
     } else {
       this.setState((prev) => ({
@@ -209,6 +219,7 @@ class Game extends React.Component {
 const mapStateToProps = (state) => ({
   score: state.player.score,
   assertions: state.player.assertions,
+  name: state.player.name,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -220,6 +231,7 @@ Game.propTypes = {
   score: number,
   setPoints: func,
   assertions: number,
+  name: string,
 }.isRequired;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);
