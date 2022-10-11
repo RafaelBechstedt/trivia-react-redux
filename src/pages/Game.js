@@ -124,6 +124,20 @@ class Game extends React.Component {
     });
   };
 
+  incrementCount = () => {
+    const { count } = this.state;
+    const { history } = this.props;
+    const lastQuestion = 4;
+    if (count >= lastQuestion) {
+      history.push('/Feedback');
+    } else {
+      this.setState((prev) => ({
+        count: prev.count + 1,
+        answered: false,
+      }));
+    }
+  };
+
   render() {
     const { questions, count, loading, answered, timer } = this.state;
     const { history } = this.props;
@@ -135,7 +149,6 @@ class Game extends React.Component {
       history.push('/');
     }
     if (!loading && questions.response_code !== expiredToken) {
-      this.randomAnswers();
       pageGame = (
         <div>
           <span>{timer}</span>
@@ -167,7 +180,16 @@ class Game extends React.Component {
                 </button>
               )
             ))}
-            {console.log(questions.results[count])}
+            {answered
+            && (
+              <button
+                type="button"
+                data-testid="btn-next"
+                onClick={ this.incrementCount }
+              >
+                Next
+
+              </button>)}
           </div>
         </div>
       );
