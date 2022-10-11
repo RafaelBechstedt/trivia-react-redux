@@ -1,7 +1,8 @@
 import React from 'react';
-import { shape, func } from 'prop-types';
-
+import { shape, func, string } from 'prop-types';
+import { connect } from 'react-redux';
 import Header from '../components/Header';
+import { setRanking } from '../redux/actions';
 
 class Game extends React.Component {
   state = {
@@ -13,10 +14,14 @@ class Game extends React.Component {
   };
 
   componentDidMount() {
-    const SECOND = 1000;
     this.fetchApi();
-    setInterval(() => this.decreaseTimer(), SECOND);
+    this.myInterval();
   }
+
+  myInterval = () => {
+    const SECOND = 1000;
+    this.id = setInterval(() => this.decreaseTimer(), SECOND);
+  };
 
   fetchApi = async () => {
     const token = localStorage.getItem('token');
@@ -74,11 +79,34 @@ class Game extends React.Component {
     return index;
   };
 
-  handleClick = () => {
+  checkDifficulty = () => {
+    const { questions, count } = this.state;
+    const tPoint = 3;
+    switch (questions.results[count].difficulty) {
+    case 'easy':
+      return 1;
+    case 'medium':
+      return 2;
+    case 'hard':
+      return tPoint;
+    default:
+      return 0;
+    }
+  };
+
+  handleClick = (answer) => {
+    clearInterval(this.id);
     this.setState({
       answered: true,
     });
-    clearInterval(0);
+    const { score, setPoints } = this.props;
+    const { timer } = this.state;
+    const basePoints = 10;
+    let scoreRanking = 0;
+    if (answer === 'correct') {
+      scoreRanking = score + basePoints + (timer * this.checkDifficulty());
+      setPoints(scoreRanking);
+    }
   };
 
   decreaseTimer = () => {
@@ -88,7 +116,10 @@ class Game extends React.Component {
     }), () => {
       const { timer } = this.state;
       if (timer === 0) {
-        this.handleClick();
+        clearInterval(this.id);
+        this.setState({
+          answered: true,
+        });
       }
     });
   };
@@ -118,7 +149,7 @@ class Game extends React.Component {
                   data-testid="correct-answer"
                   className={ answered ? 'correct' : null }
                   key={ answer.answer }
-                  onClick={ this.handleClick }
+                  onClick={ () => this.handleClick('correct') }
                   disabled={ answered }
                 >
                   {answer.answer}
@@ -129,13 +160,14 @@ class Game extends React.Component {
                   data-testid={ `wrong-answer-${this.incrementIndex(index)}` }
                   className={ answered ? 'incorrect' : null }
                   key={ answer }
-                  onClick={ this.handleClick }
+                  onClick={ () => this.handleClick('incorrect') }
                   disabled={ answered }
                 >
                   {answer}
                 </button>
               )
             ))}
+            {console.log(questions.results[count])}
           </div>
         </div>
       );
@@ -149,8 +181,18 @@ class Game extends React.Component {
   }
 }
 
+const mapStateToProps = (state) => ({
+  score: state.player.score,
+});
+
+const mapDispatchToProps = (dispatch) => ({
+  setPoints: (score) => dispatch(setRanking(score)),
+});
+
 Game.propTypes = {
   history: shape({ push: func }),
+  score: string,
+  setPoints: func,
 }.isRequired;
 
-export default Game;
+export default connect(mapStateToProps, mapDispatchToProps)(Game);
