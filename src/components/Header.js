@@ -1,11 +1,11 @@
 import React from 'react';
-import { string } from 'prop-types';
+import { string, number } from 'prop-types';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
 
 class Header extends React.Component {
   render() {
-    const { name, email } = this.props;
+    const { name, email, score } = this.props;
     const hash = md5(email).toString();
     return (
       <header>
@@ -14,7 +14,7 @@ class Header extends React.Component {
           {name}
         </h1>
         <span data-testid="header-score">
-          {0}
+          {score}
         </span>
       </header>
     );
@@ -23,11 +23,13 @@ class Header extends React.Component {
 const mapStateToProps = (state) => ({
   name: state.player.name,
   email: state.player.email,
+  score: state.player.score,
 });
 
 Header.propTypes = {
   name: string,
   email: string,
+  score: number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Header);
