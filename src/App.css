@@ -28,11 +28,11 @@ body {
   }
 }
 
-#incorrect button {
+.incorrect {
   border: 3px solid red;
 }
 
-#correct button {
+.correct {
   border: 3px solid rgb(6, 240, 15);
 }
 

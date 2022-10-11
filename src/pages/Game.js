@@ -116,7 +116,7 @@ class Game extends React.Component {
                 <button
                   type="button"
                   data-testid="correct-answer"
-                  id={ answered ? 'correct' : null }
+                  className={ answered ? 'correct' : null }
                   key={ answer.answer }
                   onClick={ this.handleClick }
                   disabled={ answered }
@@ -127,7 +127,7 @@ class Game extends React.Component {
                 <button
                   type="button"
                   data-testid={ `wrong-answer-${this.incrementIndex(index)}` }
-                  id={ answered ? 'incorrect' : null }
+                  className={ answered ? 'incorrect' : null }
                   key={ answer }
                   onClick={ this.handleClick }
                   disabled={ answered }
