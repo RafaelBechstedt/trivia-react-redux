@@ -32,11 +32,15 @@ class Login extends Component {
   handleBtn = async (event) => {
     event.preventDefault();
     const token = await this.fetchApi();
+    const score = 0;
+    const assertions = 0;
     const { history, setUser } = this.props;
     const { name, email } = this.state;
     setUser({
       name,
       email,
+      score,
+      assertions,
     });
     localStorage.setItem('token', token);
     history.push('/game');
