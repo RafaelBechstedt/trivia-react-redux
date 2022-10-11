@@ -82,15 +82,14 @@ class Game extends React.Component {
   checkDifficulty = () => {
     const { questions, count } = this.state;
     const tPoint = 3;
-    switch (questions.results[count].difficulty) {
-    case 'easy':
+    if (questions.results[count].difficulty === 'easy') {
       return 1;
-    case 'medium':
+    }
+    if (questions.results[count].difficulty === 'medium') {
       return 2;
-    case 'hard':
+    }
+    if (questions.results[count].difficulty === 'hard') {
       return tPoint;
-    default:
-      return 0;
     }
   };
 
@@ -210,6 +209,7 @@ class Game extends React.Component {
     return (
       <div>
         <Header />
+        <h1>Trivia</h1>
         { pageGame }
       </div>
     );

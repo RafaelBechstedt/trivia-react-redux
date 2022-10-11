@@ -17,6 +17,7 @@ describe('', () => {
         userEvent.type(inputName,'teste');
         expect(btnPlay).not.toBeDisabled();
         userEvent.click(btnPlay);
+        await screen.findByText(/Trivia/i);
         await waitFor(() => { expect(history.location.pathname).toBe('/game');})
     })
     

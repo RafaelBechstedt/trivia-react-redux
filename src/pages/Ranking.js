@@ -13,13 +13,8 @@ class Ranking extends Component {
 
   getRankingFromStorage = () => {
     const ranking = JSON.parse(localStorage.getItem('ranking'));
-    if (!ranking) {
-      const { history } = this.props;
-      history.push('/');
-    } else {
-      ranking.sort(this.orderingRanking);
-      return ranking;
-    }
+    ranking.sort(this.orderingRanking);
+    return ranking;
   };
 
   render() {
