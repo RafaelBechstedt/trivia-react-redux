@@ -5,13 +5,13 @@ import Header from '../components/Header';
 
 class Feedback extends Component {
   render() {
-    const { correct } = this.props;
+    const { assertions, score } = this.props;
     let feedbackText = null;
     const checkNumber = 3;
-    if (correct < checkNumber) {
+    if (assertions < checkNumber) {
       feedbackText = <p data-testid="feedback-text">Could be better...</p>;
     }
-    if (correct >= checkNumber) {
+    if (assertions >= checkNumber) {
       feedbackText = <p data-testid="feedback-text">Well Done!</p>;
     }
 
@@ -19,17 +19,21 @@ class Feedback extends Component {
       <div>
         <Header />
         {feedbackText}
+        <p data-testid="feedback-total-score">{score}</p>
+        <p data-testid="feedback-total-question">{assertions}</p>
       </div>
     );
   }
 }
 
 const mapStateToProps = (state) => ({
-  correct: state.player.correct,
+  assertions: state.player.assertions,
+  score: state.player.score,
 });
 
 Feedback.propTypes = {
   correct: number,
+  score: number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Feedback);
