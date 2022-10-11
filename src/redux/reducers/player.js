@@ -15,7 +15,6 @@ function playerReduce(state = INITIAL_STATE, action) {
       name: action.payload.name,
     };
   case SET_RANKING:
-    console.log(action.payload.score);
     return {
       ...state,
       score: action.payload,
