@@ -99,16 +99,14 @@ class Game extends React.Component {
     this.setState({
       answered: true,
     });
-    const { score, setPoints, correct } = this.props;
+    const { score, setPoints, assertions } = this.props;
     const { timer } = this.state;
     const basePoints = 10;
     let scoreRanking = 0;
     let correctRanking = 0;
-    console.log(correct);
     if (answer === 'correct') {
-      correctRanking = correct + 1;
+      correctRanking = assertions + 1;
       scoreRanking = score + basePoints + (timer * this.checkDifficulty());
-      console.log(correctRanking);
       const points = { scoreRanking, correctRanking };
       setPoints(points);
     }
@@ -210,7 +208,7 @@ class Game extends React.Component {
 
 const mapStateToProps = (state) => ({
   score: state.player.score,
-  correct: state.player.correct,
+  assertions: state.player.assertions,
 });
 
 const mapDispatchToProps = (dispatch) => ({
@@ -221,7 +219,7 @@ Game.propTypes = {
   history: shape({ push: func }),
   score: number,
   setPoints: func,
-  correct: number,
+  assertions: number,
 }.isRequired;
 
 export default connect(mapStateToProps, mapDispatchToProps)(Game);

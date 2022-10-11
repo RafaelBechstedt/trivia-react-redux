@@ -4,7 +4,7 @@ const INITIAL_STATE = {
   email: '',
   name: '',
   score: 0,
-  correct: 0,
+  assertions: 0,
 };
 
 function playerReduce(state = INITIAL_STATE, action) {
@@ -19,7 +19,7 @@ function playerReduce(state = INITIAL_STATE, action) {
     return {
       ...state,
       score: action.payload.scoreRanking,
-      correct: action.payload.correctRanking,
+      assertions: action.payload.correctRanking,
     };
   default:
     return state;
