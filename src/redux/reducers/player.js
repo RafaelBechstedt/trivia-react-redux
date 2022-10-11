@@ -14,6 +14,8 @@ function playerReduce(state = INITIAL_STATE, action) {
       ...state,
       email: action.payload.email,
       name: action.payload.name,
+      score: action.payload.score,
+      assertions: action.payload.assertions,
     };
   case SET_RANKING:
     return {
