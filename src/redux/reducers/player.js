@@ -4,6 +4,7 @@ const INITIAL_STATE = {
   email: '',
   name: '',
   score: 0,
+  correct: 0,
 };
 
 function playerReduce(state = INITIAL_STATE, action) {
@@ -17,7 +18,8 @@ function playerReduce(state = INITIAL_STATE, action) {
   case SET_RANKING:
     return {
       ...state,
-      score: action.payload,
+      score: action.payload.scoreRanking,
+      correct: action.payload.correctRanking,
     };
   default:
     return state;
