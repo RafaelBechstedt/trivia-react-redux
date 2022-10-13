@@ -29,10 +29,19 @@ class Game extends React.Component {
       `https://opentdb.com/api.php?amount=5&token=${token}`,
     );
     const data = await response.json();
-
+    const shuffledArray = data.results.map((answer) => {
+      const arr = [];
+      arr.push(...answer.incorrect_answers);
+      arr.push(
+        { answer: answer.correct_answer, correct: true },
+      );
+      const shuffled = this.shuffle(arr);
+      return shuffled;
+    });
     this.setState({
       questions: data,
       loading: false,
+      answers: shuffledArray,
     });
   };
 
@@ -55,24 +64,24 @@ class Game extends React.Component {
     return array;
   };
 
-  randomAnswers = () => {
-    const { questions, count } = this.state;
-    const arr = [];
-    const question = questions.results[count];
-    arr.push(
-      ...questions.results[count].incorrect_answers,
-    );
-    arr.push(
-      { answer: question.correct_answer, correct: true },
-    );
-    const shuffledArray = this.shuffle(arr);
+  // randomAnswers = () => {
+  //   const { questions, count } = this.state;
+  //   const arr = [];
+  //   const question = questions.results[count];
+  //   arr.push(
+  //     ...questions.results[count].incorrect_answers,
+  //   );
+  //   arr.push(
+  //     { answer: question.correct_answer, correct: true },
+  //   );
+  //   const shuffledArray = this.shuffle(arr);
 
-    return shuffledArray;
+  //   return shuffledArray;
 
-    // this.setState({
-    //   answers: shuffledArray,
-    // });
-  };
+  //   // this.setState({
+  //   //   answers: shuffledArray,
+  //   // });
+  // };
 
   incrementIndex = (index) => {
     index += 1;
@@ -144,14 +153,15 @@ class Game extends React.Component {
       history.push('/Feedback');
     } else {
       this.setState((prev) => ({
+        timer: 30,
         count: prev.count + 1,
         answered: false,
-      }));
+      }), () => this.myInterval());
     }
   };
 
   render() {
-    const { questions, count, loading, answered, timer } = this.state;
+    const { questions, count, loading, answered, timer, answers } = this.state;
     const { history } = this.props;
     const expiredToken = 3;
     let pageGame = '';
@@ -163,11 +173,11 @@ class Game extends React.Component {
     if (!loading && questions.response_code !== expiredToken) {
       pageGame = (
         <div>
-          <span>{timer}</span>
+          <span data-testid="question-timer">{timer}</span>
           <p data-testid="question-category">{ questions.results[count].category }</p>
           <p data-testid="question-text">{ questions.results[count].question }</p>
           <div data-testid="answer-options">
-            { this.randomAnswers().map((answer) => (
+            { answers[count].map((answer) => (
               answer.correct ? (
                 <button
                   type="button"
