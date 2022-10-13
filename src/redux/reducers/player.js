@@ -1,4 +1,4 @@
-import { ADD_USER, SET_RANKING } from '../actions';
+import { ADD_USER, SET_QUESTIONS, SET_RANKING } from '../actions';
 
 const INITIAL_STATE = {
   email: '',
@@ -22,6 +22,11 @@ function playerReduce(state = INITIAL_STATE, action) {
       ...state,
       score: action.payload.scoreRanking,
       assertions: action.payload.correctRanking,
+    };
+  case SET_QUESTIONS:
+    return {
+      ...state,
+      arrQuestions: action.payload.arrQuestions,
     };
   default:
     return state;
